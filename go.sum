@@ -1,0 +1,4 @@
+github.com/algoGuy/EasyMIDI v0.0.0-20180322051653-708ca39e7399 h1:f0h3xTKQjrTzAUwqMJr1TY3lk3gTK8R4v7ZjcSMiwm8=
+github.com/algoGuy/EasyMIDI v0.0.0-20180322051653-708ca39e7399/go.mod h1:z6svyEeOasADFxg4gn6funK2OBjocr62B4J7ZPodCPs=
+github.com/rakyll/portmidi v0.0.0-20191102002215-74e95e8bc9b1 h1:ayxM9WkC6QRX0QnfrbZa98pfFqrNq1jo+58rWL1qjZs=
+github.com/rakyll/portmidi v0.0.0-20191102002215-74e95e8bc9b1/go.mod h1:xKffaBd7e1YUoLpR2azvJqkxEdUDNGNDMlsUNdv6Bcs=
