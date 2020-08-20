@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ncirocco/midi-player/midiparser"
-	"github.com/ncirocco/midi-player/midiplayer"
+	"github.com/ncirocco/midino/midiparser"
+	"github.com/ncirocco/midino/midiplayer"
 
 	"github.com/algoGuy/EasyMIDI/smfio"
 )

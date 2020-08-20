@@ -7,9 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ncirocco/midi-player/midimessages"
-	"github.com/ncirocco/midi-player/midiparser"
-	"github.com/ncirocco/midi-player/miditiming"
+	"github.com/ncirocco/midino/midimessages"
+	"github.com/ncirocco/midino/midiparser"
+	"github.com/ncirocco/midino/miditiming"
 	"github.com/rakyll/portmidi"
 )
 
@@ -25,6 +25,8 @@ func PlayMIDI(midi *midiparser.Midi) {
 	defer out.Close()
 	defer portmidi.Terminate()
 
+	// In case that the user interrupts the program (ctrl+c)
+	// this will stop properly all the playing notes.
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -63,6 +65,8 @@ func PlayMIDI(midi *midiparser.Midi) {
 			)
 		}
 	}
+
+	StopAllNotes(out)
 }
 
 // StopAllNotes stops all the notes in all the channels inmidiatelly

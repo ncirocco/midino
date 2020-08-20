@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/algoGuy/EasyMIDI/smf"
-	"github.com/ncirocco/midi-player/miditiming"
+	"github.com/ncirocco/midino/miditiming"
 )
 
 const tempoMetaType uint8 = 0x51

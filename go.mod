@@ -1,4 +1,4 @@
-module github.com/ncirocco/midi-player
+module github.com/ncirocco/midino
 
 go 1.14
 
