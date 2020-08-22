@@ -1,10 +1,7 @@
 package midiplayer
 
 import (
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"fmt"
 	"time"
 
 	"github.com/ncirocco/midino/midimessages"
@@ -15,28 +12,32 @@ import (
 
 const midiChannels int64 = 16
 
-// PlayMIDI plays the given MIDI
-func PlayMIDI(midi *midiparser.Midi) {
+// Player contains all the necessary logic to play a MIDI song
+type Player struct {
+	out *portmidi.Stream
+}
+
+// NewPlayer returns an instance of a Player
+func NewPlayer() (*Player, error) {
 	portmidi.Initialize()
 	out, err := portmidi.NewOutputStream(2, 1024, 0)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	defer out.Close()
-	defer portmidi.Terminate()
 
-	// In case that the user interrupts the program (ctrl+c)
-	// this will stop properly all the playing notes.
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		StopAllNotes(out)
-		os.Exit(1)
-	}()
+	return &Player{
+		out: out,
+	}, nil
+}
+
+// PlayMIDI plays the given MIDI
+func (p *Player) PlayMIDI(midi *midiparser.Midi) {
+	// reset all channels to the default value to avoid problems
+	// with files that assume all values are already in its default
+	resetChannels(p.out)
 
 	play := make(map[int64][]*midiparser.Event)
-	m := int64(0)
+	totalTicks := int64(0)
 	for _, track := range midi.Tracks {
 		t := int64(0)
 		for _, event := range track.Events {
@@ -44,21 +45,22 @@ func PlayMIDI(midi *midiparser.Midi) {
 			event.AbsoluteTicks = t
 			play[t] = append(play[t], event)
 		}
-		if m < t {
-			m = t
+		if totalTicks < t {
+			totalTicks = t
 		}
-
 	}
 
 	lastEventTicks := int64(0)
-	msPerTick := miditiming.TempoAndPpqnToMS(midi.Tempo, midi.Ppqn)
+	nsPerTick := miditiming.TempoAndPpqnToNS(midi.Tempo, midi.Ppqn)
 
-	for i := int64(0); i < m; i++ {
+	displayInfo(midi, totalTicks*nsPerTick)
+
+	for i := int64(0); i < totalTicks; i++ {
 		for _, event := range play[i] {
 			deltaTicks := event.AbsoluteTicks - lastEventTicks
 			lastEventTicks = event.AbsoluteTicks
-			time.Sleep(time.Duration(msPerTick * deltaTicks))
-			out.WriteShort(
+			time.Sleep(time.Duration(nsPerTick * deltaTicks))
+			p.out.WriteShort(
 				event.Status+event.Channel,
 				event.FirstDataByte,
 				event.SecondDataByte,
@@ -66,13 +68,68 @@ func PlayMIDI(midi *midiparser.Midi) {
 		}
 	}
 
-	StopAllNotes(out)
+	// mutes all notes that are playing that don't have a mute note message
+	muteAllNotes(p.out)
+	// give some time in between songs
+	time.Sleep(time.Duration(2 * time.Second))
+	// just in case force stop any remaining sounds from the previous song
+	stopAllNotes(p.out)
 }
 
-// StopAllNotes stops all the notes in all the channels inmidiatelly
-func StopAllNotes(out *portmidi.Stream) {
+func displayInfo(midi *midiparser.Midi, duration int64) {
+	fmt.Println(
+		midi.Name,
+		"-",
+		secondsToMinutes(duration/int64(time.Second)),
+	)
+}
+
+func secondsToMinutes(inSeconds int64) string {
+	minutes := inSeconds / 60
+	seconds := inSeconds % 60
+	str := fmt.Sprintf("%02d:%02d", minutes, seconds)
+	return str
+}
+
+// Close stops all notesm closes the output stream and terminates portmidi.
+func (p *Player) Close() {
+	stopAllNotes(p.out)
+	p.out.Close()
+	portmidi.Terminate()
+}
+
+// resetChannels resets all channels to the default instrument and clears all controllers
+func resetChannels(out *portmidi.Stream) {
+	for channel := int64(0); channel < midiChannels; channel++ {
+		m := midimessages.SelectInstrument(channel, midimessages.AcousticGrandPiano)
+		out.WriteShort(
+			m.StatusByte,
+			m.DataByte1,
+			m.DataByte2,
+		)
+		m = midimessages.ClearAllControllersForChannel(channel)
+		out.WriteShort(
+			m.StatusByte,
+			m.DataByte1,
+			m.DataByte2,
+		)
+	}
+}
+
+func stopAllNotes(out *portmidi.Stream) {
 	for channel := int64(0); channel < midiChannels; channel++ {
 		m := midimessages.StopAll(channel)
+		out.WriteShort(
+			m.StatusByte,
+			m.DataByte1,
+			m.DataByte2,
+		)
+	}
+}
+
+func muteAllNotes(out *portmidi.Stream) {
+	for channel := int64(0); channel < midiChannels; channel++ {
+		m := midimessages.MuteAll(channel)
 		out.WriteShort(
 			m.StatusByte,
 			m.DataByte1,

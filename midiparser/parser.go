@@ -1,10 +1,15 @@
 package midiparser
 
 import (
+	"bufio"
 	"encoding/hex"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/algoGuy/EasyMIDI/smf"
+	"github.com/algoGuy/EasyMIDI/smfio"
 	"github.com/ncirocco/midino/miditiming"
 )
 
@@ -12,6 +17,8 @@ const tempoMetaType uint8 = 0x51
 
 // Midi holds all the information for a MIDI file
 type Midi struct {
+	Name   string
+	Path   string
 	Tracks map[int]*Track
 	Bpm    int64
 	Ppqn   int64
@@ -34,9 +41,22 @@ type Event struct {
 }
 
 // ParseMidiFile parses the file and returns a Midi struct
-func ParseMidiFile(midiFile *smf.MIDIFile) *Midi {
+func ParseMidiFile(path string) (*Midi, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	midiFile, err := smfio.Read(bufio.NewReader(file))
+	if err != nil {
+		return nil, err
+	}
+
 	div := midiFile.GetDivision()
 	ms := Midi{
+		Name:   strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)),
+		Path:   path,
 		Tracks: make(map[int]*Track),
 		Ppqn:   int64(div.GetTicks()),
 		Bpm:    miditiming.CalculateBpm(miditiming.DefaultTempo),
@@ -66,7 +86,7 @@ func ParseMidiFile(midiFile *smf.MIDIFile) *Midi {
 		}
 	}
 
-	return &ms
+	return &ms, nil
 }
 
 func handleMidiEvent(event *smf.MIDIEvent) *Event {

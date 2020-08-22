@@ -10,8 +10,8 @@ func CalculateBpm(tempo int64) int64 {
 	return (60 * 1000000) / tempo
 }
 
-// TempoAndPpqnToMS calculates how many microseconds there are in one tick
+// TempoAndPpqnToNS calculates how many nanoseconds there are in one tick
 // based on tempo and ppqn (pulses per quarter note)
-func TempoAndPpqnToMS(tempo int64, ppqn int64) int64 {
+func TempoAndPpqnToNS(tempo int64, ppqn int64) int64 {
 	return tempo * 1000 / ppqn
 }
