@@ -18,9 +18,9 @@ type Player struct {
 }
 
 // NewPlayer returns an instance of a Player
-func NewPlayer() (*Player, error) {
+func NewPlayer(deviceID int64) (*Player, error) {
 	portmidi.Initialize()
-	out, err := portmidi.NewOutputStream(2, 1024, 0)
+	out, err := portmidi.NewOutputStream(portmidi.DeviceID(deviceID), 1024, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -136,4 +136,27 @@ func muteAllNotes(out *portmidi.Stream) {
 			m.DataByte2,
 		)
 	}
+}
+
+// ListDevices lists all the available output MIDI devices and their IDs
+func ListDevices() error {
+	err := portmidi.Initialize()
+	if err != nil {
+		return err
+	}
+
+	defer portmidi.Terminate()
+
+	numDevices := portmidi.CountDevices()
+
+	fmt.Println("Available output MIDI devices")
+	for i := 0; i < numDevices; i++ {
+		info := portmidi.Info(portmidi.DeviceID(i))
+
+		if info.IsOutputAvailable {
+			fmt.Println("ID:", i, "Name:", info.Name)
+		}
+	}
+
+	return nil
 }
