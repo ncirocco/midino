@@ -83,6 +83,7 @@ func (p *Player) playMIDI(midi *midiparser.Midi) bool {
 	// with files that assume all values are already in its default
 	resetChannels(p.out)
 	p.updateScreen()
+	p.pause = false
 
 	play := make(map[int64][]*midiparser.Event)
 	totalTicks := int64(0)
@@ -240,19 +241,23 @@ func (p *Player) hotkeys() {
 					p.playlistUI.ScrollTop()
 				}
 			case "h":
+				p.pause = false
 				if p.currentSong > 0 {
 					p.currentSong--
 				}
 
 				p.event <- 1
 			case "l":
+				p.pause = false
 				if p.currentSong < len(p.playlist)-1 {
 					p.currentSong++
 				}
 				p.event <- 1
 			case "<C-c>", "q":
+				p.pause = false
 				p.event <- 0
 			case "<Enter>":
+				p.pause = false
 				p.currentSong = p.playlistUI.SelectedRow
 
 				p.event <- 1
