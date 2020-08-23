@@ -1,4 +1,13 @@
 github.com/algoGuy/EasyMIDI v0.0.0-20180322051653-708ca39e7399 h1:f0h3xTKQjrTzAUwqMJr1TY3lk3gTK8R4v7ZjcSMiwm8=
 github.com/algoGuy/EasyMIDI v0.0.0-20180322051653-708ca39e7399/go.mod h1:z6svyEeOasADFxg4gn6funK2OBjocr62B4J7ZPodCPs=
+github.com/gizak/termui v3.1.0+incompatible h1:N3CFm+j087lanTxPpHOmQs0uS3s5I9TxoAFy6DqPqv8=
+github.com/gizak/termui/v3 v3.1.0 h1:ZZmVDgwHl7gR7elfKf1xc4IudXZ5qqfDh4wExk4Iajc=
+github.com/gizak/termui/v3 v3.1.0/go.mod h1:bXQEBkJpzxUAKf0+xq9MSWAvWZlE7c+aidmyFlkYTrY=
+github.com/mattn/go-runewidth v0.0.2 h1:UnlwIPBGaTZfPQ6T1IGzPI0EkYAQmT9fAEJ/poFC63o=
+github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
+github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 h1:DpOJ2HYzCv8LZP15IdmG+YdwD2luVPHITV96TkirNBM=
+github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7/go.mod h1:ZXFpozHsX6DPmq2I0TCekCxypsnAUbP2oI0UX1GXzOo=
+github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d h1:x3S6kxmy49zXVVyhcnrFqxvNVCBPb2KZ9hV2RBdS840=
+github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d/go.mod h1:IuKpRQcYE1Tfu+oAQqaLisqDeXgjyyltCfsaoYN18NQ=
 github.com/rakyll/portmidi v0.0.0-20191102002215-74e95e8bc9b1 h1:ayxM9WkC6QRX0QnfrbZa98pfFqrNq1jo+58rWL1qjZs=
 github.com/rakyll/portmidi v0.0.0-20191102002215-74e95e8bc9b1/go.mod h1:xKffaBd7e1YUoLpR2azvJqkxEdUDNGNDMlsUNdv6Bcs=

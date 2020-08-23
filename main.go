@@ -9,7 +9,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/ncirocco/midino/midiparser"
 	"github.com/ncirocco/midino/midiplayer"
 )
 
@@ -41,19 +40,15 @@ func main() {
 	registerInterrupSignal(p)
 
 	if strings.HasSuffix(strings.ToLower(os.Args[2]), ".mid") {
-		midi, err := midiparser.ParseMidiFile(os.Args[2])
+		p.AddToPlaylist(os.Args[2])
+	} else {
+		err = playPlaylist(os.Args[2], p)
 		if err != nil {
 			log.Fatal(err)
 		}
-		p.PlayMIDI(midi)
-
-		return
 	}
 
-	err = playPlaylist(os.Args[2], p)
-	if err != nil {
-		log.Fatal(err)
-	}
+	p.Play()
 }
 
 func playPlaylist(path string, p *midiplayer.Player) error {
@@ -65,11 +60,7 @@ func playPlaylist(path string, p *midiplayer.Player) error {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		midi, err := midiparser.ParseMidiFile(scanner.Text())
-		if err != nil {
-			log.Fatal(err)
-		}
-		p.PlayMIDI(midi)
+		p.AddToPlaylist(scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
