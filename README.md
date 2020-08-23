@@ -2,6 +2,10 @@
 
 **MIDINO** is a Linux CLI MIDI player for MIDI sound modules, like the [Roland Sound Canvas](https://en.wikipedia.org/wiki/Roland_Sound_Canvas) and the [Yamaha MU-series](https://en.wikipedia.org/wiki/Yamaha_MU-series).
 
+<p align="center">
+  <img width="654" height="523" src="https://github.com/ncirocco/midino/blob/master/example/midino.png" alt="Midino">
+</p>
+
 ## Download and run
 Download the latest binary from the [release page](https://github.com/ncirocco/midino/releases)
 
