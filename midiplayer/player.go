@@ -198,7 +198,7 @@ func (p *Player) updateScreen() {
 	ui.Render(currentSong)
 
 	hotkeys := widgets.NewParagraph()
-	hotkeys.Text = "MIDINO - " +
+	hotkeys.Text = "| MIDINO | " +
 		"q - quit | " +
 		"l - next song | " +
 		"h - prev song | " +
