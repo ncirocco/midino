@@ -81,6 +81,7 @@ func (p *Player) Play() {
 func (p *Player) playMIDI(midi *midiparser.Midi) bool {
 	// reset all channels to the default value to avoid problems
 	// with files that assume all values are already in its default
+	gmReset(p.out)
 	resetChannels(p.out)
 	p.updateScreen()
 	p.pause = false
@@ -332,4 +333,8 @@ func muteAllNotes(out *portmidi.Stream) {
 			m.DataByte2,
 		)
 	}
+}
+
+func gmReset(out *portmidi.Stream) {
+	out.WriteSysEx(0, "F0 7E 7F 09 01 F7")
 }

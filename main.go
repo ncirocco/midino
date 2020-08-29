@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -13,6 +14,10 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		log.Fatal("Missing DeviceID and file or playlist argument.")
+	}
+
 	if len(os.Args[1]) == 2 && os.Args[1] == "-l" {
 		err := midiplayer.ListDevices()
 		if err != nil {
@@ -20,10 +25,6 @@ func main() {
 		}
 
 		return
-	}
-
-	if len(os.Args) != 3 {
-		log.Fatal("Missing DeviceID and file or playlist argument.")
 	}
 
 	deviceID, err := strconv.Atoi(os.Args[1])
@@ -39,7 +40,15 @@ func main() {
 
 	registerInterrupSignal(p)
 
-	if strings.HasSuffix(strings.ToLower(os.Args[2]), ".mid") {
+	if len(os.Args) == 2 {
+		filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+			if filepath.Ext(strings.ToLower(path)) == ".mid" {
+				p.AddToPlaylist(path)
+			}
+
+			return nil
+		})
+	} else if strings.HasSuffix(strings.ToLower(os.Args[2]), ".mid") {
 		p.AddToPlaylist(os.Args[2])
 	} else {
 		err = playPlaylist(os.Args[2], p)
